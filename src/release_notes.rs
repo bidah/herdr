@@ -71,11 +71,13 @@ fn load_stored_from_path(path: &Path) -> Option<StoredReleaseNotes> {
 }
 
 pub fn load_pending_for_current_version() -> Option<ReleaseNotes> {
-    load_pending_from_path(&pending_path(), env!("CARGO_PKG_VERSION"))
+    // Disabled in this fork — no "what's new" modal
+    None
 }
 
 pub fn load_latest() -> Option<ReleaseNotes> {
-    load_latest_from_path(&pending_path(), env!("CARGO_PKG_VERSION"))
+    // Disabled in this fork — no "what's new" modal
+    None
 }
 
 fn load_pending_from_path(path: &Path, current_version: &str) -> Option<ReleaseNotes> {
