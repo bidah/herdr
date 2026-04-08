@@ -211,58 +211,7 @@ pub fn self_update() -> Result<Version, String> {
 
 /// Background auto-update: disabled in this fork to stay on our patched version.
 pub fn auto_update(_events: tokio::sync::mpsc::Sender<crate::events::AppEvent>) {
-    return;
-    if let Ok(version) = env::var(FAKE_UPDATE_VERSION_ENV) {
-        let version = version.trim();
-        if !version.is_empty() {
-            tracing::info!(
-                env = FAKE_UPDATE_VERSION_ENV,
-                version,
-                "using fake update version for local testing"
-            );
-            if let Err(e) =
-                crate::release_notes::save_pending(version, &fake_release_notes_body(version))
-            {
-                tracing::warn!("failed to save fake pending release notes: {e}");
-            }
-            let _ = events.blocking_send(crate::events::AppEvent::UpdateReady {
-                version: version.to_string(),
-            });
-        }
-        return;
-    }
-
-    let release = match check_latest() {
-        Ok(Some(r)) => r,
-        _ => return, // up to date or failed — silently do nothing
-    };
-
-    tracing::info!(
-        "new version v{} available, downloading from {}",
-        release.version,
-        release.download_url
-    );
-
-    if let Err(e) =
-        crate::release_notes::save_pending(&release.version.to_string(), &release.notes_body)
-    {
-        tracing::warn!("failed to save pending release notes: {e}");
-    }
-
-    if let Err(e) = download_and_install(&release) {
-        tracing::warn!("auto-update failed: {e}");
-        return;
-    }
-
-    tracing::info!(
-        "auto-update: v{} installed, restart to use",
-        release.version
-    );
-
-    // Notify the TUI — blocking_send is safe from a std::thread
-    let _ = events.blocking_send(crate::events::AppEvent::UpdateReady {
-        version: release.version.to_string(),
-    });
+    // no-op: auto-update disabled
 }
 
 // ---------------------------------------------------------------------------
