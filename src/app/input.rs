@@ -2139,7 +2139,10 @@ impl AppState {
                         return None;
                     }
                 } else if let Some(info) = self.pane_at(mouse.column, mouse.row).cloned() {
-                    if self.forward_pane_mouse_button(&info, mouse) {
+                    let is_focused = self.active
+                        .and_then(|i| self.workspaces.get(i))
+                        .map_or(false, |ws| ws.layout.focused() == info.id);
+                    if is_focused && self.forward_pane_mouse_button(&info, mouse) {
                         self.selection = None;
                         return None;
                     }
@@ -2178,7 +2181,10 @@ impl AppState {
 
             MouseEventKind::Drag(MouseButton::Left) => {
                 if let Some(info) = self.pane_mouse_target(mouse.column, mouse.row).cloned() {
-                    if self.forward_pane_mouse_button(&info, mouse) {
+                    let is_focused = self.active
+                        .and_then(|i| self.workspaces.get(i))
+                        .map_or(false, |ws| ws.layout.focused() == info.id);
+                    if is_focused && self.forward_pane_mouse_button(&info, mouse) {
                         self.selection = None;
                         return None;
                     }
@@ -2271,7 +2277,10 @@ impl AppState {
 
             MouseEventKind::Up(MouseButton::Left) => {
                 if let Some(info) = self.pane_mouse_target(mouse.column, mouse.row).cloned() {
-                    if self.forward_pane_mouse_button(&info, mouse) {
+                    let is_focused = self.active
+                        .and_then(|i| self.workspaces.get(i))
+                        .map_or(false, |ws| ws.layout.focused() == info.id);
+                    if is_focused && self.forward_pane_mouse_button(&info, mouse) {
                         self.selection = None;
                         self.workspace_press = None;
                         self.drag = None;
@@ -2314,7 +2323,12 @@ impl AppState {
                 if !in_sidebar =>
             {
                 if let Some(info) = self.pane_mouse_target(mouse.column, mouse.row).cloned() {
-                    let _ = self.forward_pane_mouse_button(&info, mouse);
+                    let is_focused = self.active
+                        .and_then(|i| self.workspaces.get(i))
+                        .map_or(false, |ws| ws.layout.focused() == info.id);
+                    if is_focused {
+                        let _ = self.forward_pane_mouse_button(&info, mouse);
+                    }
                 }
             }
 
@@ -2409,7 +2423,10 @@ impl AppState {
 
             MouseEventKind::Down(MouseButton::Right) if !in_sidebar => {
                 if let Some(info) = self.pane_mouse_target(mouse.column, mouse.row).cloned() {
-                    if self.forward_pane_mouse_button(&info, mouse) {
+                    let is_focused = self.active
+                        .and_then(|i| self.workspaces.get(i))
+                        .map_or(false, |ws| ws.layout.focused() == info.id);
+                    if is_focused && self.forward_pane_mouse_button(&info, mouse) {
                         return None;
                     }
                     self.context_menu = Some(ContextMenuState {
