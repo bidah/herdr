@@ -202,35 +202,16 @@ fn download_and_install(release: &ReleaseInfo) -> Result<(), String> {
 // Public API
 // ---------------------------------------------------------------------------
 
-/// Manual self-update command (`herdr update`).
+/// Manual self-update command (`herdr update`) — disabled in this fork.
 pub fn self_update() -> Result<Version, String> {
-    eprintln!("checking for updates...");
-
     let current = Version::current();
-
-    let release = match check_latest()? {
-        Some(r) => r,
-        None => {
-            eprintln!("already up to date (v{current})");
-            return Ok(current);
-        }
-    };
-
-    eprintln!("downloading v{}...", release.version);
-    if let Err(e) =
-        crate::release_notes::save_pending(&release.version.to_string(), &release.notes_body)
-    {
-        tracing::warn!("failed to save pending release notes: {e}");
-    }
-    download_and_install(&release)?;
-    eprintln!("updated to v{}", release.version);
-
-    Ok(release.version)
+    eprintln!("auto-update is disabled in this fork (v{current})");
+    Ok(current)
 }
 
-/// Background auto-update: check, download, install, notify TUI.
-/// Runs in a background thread at startup.
-pub fn auto_update(events: tokio::sync::mpsc::Sender<crate::events::AppEvent>) {
+/// Background auto-update: disabled in this fork to stay on our patched version.
+pub fn auto_update(_events: tokio::sync::mpsc::Sender<crate::events::AppEvent>) {
+    return;
     if let Ok(version) = env::var(FAKE_UPDATE_VERSION_ENV) {
         let version = version.trim();
         if !version.is_empty() {
